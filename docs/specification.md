@@ -110,7 +110,7 @@ Default: Regular Kites, Designer Kites, Premium Kites, Kids Kites, Manjha, Firki
 | sku | 1–40 chars, `[A-Z0-9-_]` upper-cased, unique. Auto-generated `KT-000123` if blank. |
 | barcode | optional, unique when set (EAN/UPC/QR text, ≤ 64 chars) |
 | categoryId | required, active category |
-| kind | `STANDARD` or `BUNDLE` (immutable after first sale) |
+| kind | `STANDARD` or `BUNDLE` (immutable after creation — create a new product instead) |
 | unitType | `PIECE`, `PACKET`, `BUNDLE`, `BOX`, `DOZEN`, `ROLL` |
 | description | ≤ 1000 chars |
 | imageUrl | via upload endpoint; JPEG/PNG/WebP ≤ 2 MB |
@@ -215,7 +215,7 @@ Percent values: 0 < bps ≤ 10000 (client sends percent with up to 2 decimals; t
 - Users with `discounts.unlimited` may discount up to 100%.
 - Others are capped at `user.maxDiscountBps ?? settings.salespersonMaxDiscountBps` (default 1000 = 10%).
 - Over the cap, the request must include `discountApproval` with credentials of an active user holding `discounts.approve`; verified server-side, recorded as `discountApprovedById`, audit-logged (`DISCOUNT_OVERRIDE`). Failure → `403 DISCOUNT_APPROVAL_REQUIRED` / `DISCOUNT_APPROVAL_INVALID`.
-- A discount reason is required when a discount exceeds the cap (approval) and optional otherwise.
+- A discount reason is required when a discount exceeds the cap (approval) and optional otherwise. It is taken from `billDiscount.reason` or the top-level `discountReason` (needed when only item-level discounts exceed the cap).
 - `discountAppliedById` = invoice creator; recorded on the invoice.
 
 ### 8.4 Finalization transaction (single DB transaction, `READ COMMITTED` + row locks)

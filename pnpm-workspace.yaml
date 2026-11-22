@@ -7,3 +7,7 @@ onlyBuiltDependencies:
   - esbuild
   - sharp
   - unrs-resolver
+# Security: force patched versions of transitive dependencies (see docs/security.md, dependency audit).
+overrides:
+  multer: ">=2.5.0"
+  postcss: ">=8.5.23"

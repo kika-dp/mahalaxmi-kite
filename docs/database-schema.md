@@ -9,6 +9,8 @@ Conventions
 - Quantities: `integer` in the product's base unit.
 - Time: `timestamptz` (UTC). Business dates use `(created_at AT TIME ZONE 'Asia/Kolkata')::date`.
 - Every table has `created_at`; mutable tables also have `updated_at`.
+- Enumerations are `varchar` columns with `CHECK (… IN (…))` constraints (easier to evolve than PG enum types).
+- Actor foreign keys on ledger-style tables are named `*_by_id` (e.g. `created_by_id`, `requested_by_id`).
 
 ## Entity relationship overview
 
@@ -97,7 +99,7 @@ id, bundle_product_id FK→products (cascade), component_product_id FK→product
 product_id uuid PK FK→products, quantity integer NOT NULL **CHECK (quantity >= 0)**, updated_at. Row exists for every STANDARD product (created with the product, quantity 0).
 
 ### stock_movements (append-only ledger)
-id uuid, product_id FK, movement_type enum `stock_movement_type`, quantity_change int (≠ 0 CHECK), previous_quantity int, new_quantity int (CHECK new = previous + change, CHECK new ≥ 0), unit_cost_paise bigint NULL, reference_type enum (`INVOICE`, `RETURN`, `VOID`, `PURCHASE`, `RECEIPT`, `ADJUSTMENT`, `STOCK_COUNT`, `OPENING`), reference_id uuid NULL, reference_number varchar(30) NULL, reason text NULL, created_by FK users, created_at. Indexes `(product_id, created_at DESC)`, `(reference_type, reference_id)`, `(created_at)`.
+id uuid, **seq bigserial UNIQUE** (strict insertion order — rows written in one transaction share `now()`), product_id FK, movement_type enum `stock_movement_type`, quantity_change int (≠ 0 CHECK), previous_quantity int, new_quantity int (CHECK new = previous + change, CHECK new ≥ 0), unit_cost_paise bigint NULL, reference_type enum (`INVOICE`, `RETURN`, `VOID`, `PURCHASE`, `RECEIPT`, `ADJUSTMENT`, `STOCK_COUNT`, `OPENING`), reference_id uuid NULL, reference_number varchar(30) NULL, reason text NULL, created_by_id FK users, created_at. Indexes `(product_id, created_at DESC)`, `(product_id, seq DESC)`, `(reference_type, reference_id)`, `(created_at)`.
 
 ### stock_adjustments
 id, product_id FK, adjustment_type (ADJUSTMENT_IN, ADJUSTMENT_OUT, DAMAGED, LOST), quantity int > 0, reason text NOT NULL, status (PENDING, APPLIED, REJECTED), requested_by FK, decided_by FK NULL, decided_at NULL, decision_note NULL, movement_id FK→stock_movements NULL, created_at.
@@ -144,7 +146,7 @@ Indexes: `(created_at DESC)`, `(salesperson_id, created_at DESC)`, `(customer_id
 id, invoice_id FK cascade, line_no int, product_id FK, product_name, sku, unit_type, kind, quantity int > 0, unit_price_paise, unit_cost_paise, gross_paise, line_discount_type, line_discount_value, line_discount_paise, bill_discount_alloc_paise, tax_alloc_paise, line_total_paise, returned_quantity int default 0 CHECK 0 ≤ returned ≤ quantity, note varchar(200). UNIQUE(invoice_id, line_no). Index (product_id).
 
 ### invoice_item_components (bundle snapshot)
-id, invoice_item_id FK cascade, product_id FK, quantity_per_unit int > 0, unit_cost_paise.
+id, invoice_item_id FK cascade, product_id FK, product_name (snapshot), quantity_per_unit int > 0, unit_cost_paise.
 
 ### payments
 id, invoice_id FK, direction enum (IN, OUT), method enum (CASH, UPI, CARD, OTHER), amount_paise bigint CHECK > 0, reference varchar(60), note varchar(200), received_by_id FK users, return_id FK NULL, idempotency_key uuid UNIQUE NULL, created_at. Indexes `(invoice_id)`, `(created_at)`, `(method, created_at)`, `(received_by_id, created_at)`.

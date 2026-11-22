@@ -31,16 +31,18 @@ Target: OWASP ASVS Level 1 with Level 2 controls for authentication, session man
 | Customer data | Phone/name only; access restricted by role; statements require `reports.financial` | — |
 | Invoice access | PDFs require auth and same ownership rules; no public links | `documents` |
 
-## Security review checklist (Phase 8)
-- [ ] Every controller route has `@Permissions(...)` or `@Public()` (automated test)
-- [ ] Salesperson cannot: change price (PATCH /products → 403), adjust stock (403), read others' invoices (404), view cost (field absent), void/return (403), exceed discount cap without approval (403)
-- [ ] Manipulated invoice body with `unitPricePaise`/`totalPaise` → 400 (forbidden fields)
-- [ ] Refresh token reuse revokes family
-- [ ] Deactivated user's existing access token rejected on next request
-- [ ] Rate limiting on login verified
-- [ ] Upload rejects non-image and oversize files
-- [ ] Logs contain no passwords/tokens
-- [ ] `pnpm audit --prod` reviewed
+## Security review checklist (Phase 8) — status 2026-11-22
+- [x] Every controller route has `@Permissions(...)` or `@Public()` — automated test `rbac.e2e-spec.ts` scans all routes
+- [x] Salesperson cannot change price (403), adjust/receive stock (403), read others' invoices or PDFs (404), see cost fields (absent), void/return (403), exceed discount cap without approval (403) — integration tests
+- [x] Manipulated invoice body with `unitPricePaise` / `totalPaise` / `paymentStatus` → 400 — integration test
+- [x] Refresh-token reuse revokes the whole family — integration test (this found and fixed a bug where the revocation was rolled back)
+- [x] Deactivated user's existing access token rejected on the next request — integration test
+- [x] Login rate limiting — unit test of the limiter; account lockout after 10 failures — integration test
+- [x] Upload rejects a non-image disguised as PNG; accepts a real PNG — integration test
+- [x] Logs: pino redaction of authorization/cookie/password/token fields; audit log values sanitized (unit test)
+- [x] Manager credentials for discount approval are never persisted on the phone (excluded from the stored cart)
+- [x] `pnpm audit --prod` (2026-11-22): 28 findings → 10 after upgrading **multer 2.5.0** (uploads) and **csv-parse 7.0.3** (CSV import) and overriding **postcss ≥ 8.5.23**. Remaining, assessed as not reachable: `zod` (API uses zod only to parse its own environment config, never request bodies; class-validator handles input), `uuid` via exceljs (v3/v5/v6 buffer APIs never called), `glob`/`minimatch` via TypeORM (migrations are passed as classes, no user-controlled globs), `image-size` and `decode-uri-component` via Expo tooling/router (build-time / local deep-link parsing). Re-run before go-live.
+- [ ] External penetration test — recommended before exposing the API publicly
 
 ## Reporting
 Report vulnerabilities privately to the shop's technical owner; do not open public issues.

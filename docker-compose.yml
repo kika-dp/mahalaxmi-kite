@@ -1,0 +1,80 @@
+# Development DB only:  docker compose up -d db          (run api/crm with pnpm on the host)
+# Full stack:           docker compose --profile app up -d --build
+# Production:           docker compose --profile app --profile prod up -d --build   (adds Caddy HTTPS + nightly backups)
+name: kite-shop
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: kite
+      POSTGRES_USER: ${POSTGRES_USER:-kite}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kite}
+      TZ: UTC
+    ports: ["127.0.0.1:5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts/docker-db-init.sql:/docker-entrypoint-initdb.d/10-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kite} -d kite"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    profiles: ["app"]
+    build: { context: ., dockerfile: apps/api/Dockerfile }
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      API_PORT: 4000
+      DATABASE_URL: postgres://${POSTGRES_USER:-kite}:${POSTGRES_PASSWORD:-kite}@db:5432/kite
+      UPLOAD_DIR: /app/uploads
+    depends_on: { db: { condition: service_healthy } }
+    ports: ["127.0.0.1:4000:4000"]
+    volumes: [uploads:/app/uploads]
+
+  crm:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: apps/crm/Dockerfile
+      args: { NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:-http://localhost:4000/api/v1}" }
+    restart: unless-stopped
+    depends_on: [api]
+    ports: ["127.0.0.1:3000:3000"]
+
+  caddy:
+    profiles: ["prod"]
+    image: caddy:2-alpine
+    restart: unless-stopped
+    env_file: .env
+    ports: ["80:80", "443:443"]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on: [api, crm]
+
+  backup:
+    profiles: ["prod"]
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      PGHOST: db
+      PGUSER: ${POSTGRES_USER:-kite}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-kite}
+      PGDATABASE: kite
+      KEEP_DAYS: "30"
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup.sh:/backup.sh:ro
+    # Once at start-up, then nightly at 02:00 UTC (07:30 IST).
+    entrypoint: ["sh", "-c", "sh /backup.sh; while true; do sleep $$(( (93600 - $$(date +%s) % 86400) % 86400 + 1 )); sh /backup.sh; done"]
+    depends_on: { db: { condition: service_healthy } }
+
+volumes:
+  pgdata:
+  uploads:
+  caddy_data:

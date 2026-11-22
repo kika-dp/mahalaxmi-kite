@@ -98,22 +98,22 @@ See [security.md](security.md) and [deployment.md](deployment.md).
 | Library major upgrades | Breakage | Pinned versions, lockfile committed. |
 
 ## 8. Overall completion checklist (Definition of Done — prompt §29)
-- [ ] CRM runs (`pnpm --filter crm build && start`)
-- [ ] Mobile app runs (dev build on simulator/device) — *requires Xcode/EAS*
-- [ ] All 12 seed users log in with correct access
-- [ ] Admin creates/modifies products
-- [ ] Admin receives and adjusts stock
-- [ ] Mobile user creates a real bill
-- [ ] Manual discounts (fixed/percent) work
-- [ ] Payment statuses work; partial payments work
-- [ ] Stock deducts automatically, exactly once
-- [ ] Concurrent billing does not corrupt stock (test)
-- [ ] Bills appear in CRM
-- [ ] Admin views/downloads invoices
-- [ ] Dashboard accurate (test against known fixtures)
-- [ ] Low-stock alerts work
-- [ ] Reports generate (JSON/CSV/XLSX)
-- [ ] Returns/voids preserve integrity (tests)
-- [ ] Test suites pass
-- [ ] No known critical security/financial defects
-- [ ] Setup & deployment docs complete
+- [x] CRM runs (`next build` + `next start`, Playwright smoke test passed)
+- [ ] Mobile app runs on simulator/device — **not verifiable on the dev machine (no Xcode)**; typecheck, unit tests and iOS JS bundle verified
+- [x] All 12 seed users log in with correct access (integration test)
+- [x] Admin creates/modifies products
+- [x] Admin receives and adjusts stock
+- [x] Mobile user creates a real bill (API flow tested exactly as the app calls it; on-device run pending)
+- [x] Manual discounts (fixed/percent) work, incl. manager override
+- [x] Payment statuses work; partial payments work
+- [x] Stock deducts automatically, exactly once
+- [x] Concurrent billing does not corrupt stock (tests + 4,738-bill load test)
+- [x] Bills appear in CRM
+- [x] Admin views/downloads invoices (A4 + 80 mm PDF)
+- [x] Dashboard accurate (delta tests)
+- [x] Low-stock alerts work
+- [x] Reports generate (JSON/CSV/XLSX)
+- [x] Returns/voids preserve integrity (tests)
+- [x] Test suites pass
+- [x] No known critical security/financial defects (see security.md audit notes)
+- [x] Setup & deployment docs complete

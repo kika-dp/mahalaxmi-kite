@@ -1,0 +1,15 @@
+# Automatic HTTPS (Let's Encrypt). Set CRM_DOMAIN and API_DOMAIN in .env and point DNS at this server.
+{$CRM_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy crm:3000
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+}
+
+{$API_DOMAIN} {
+	encode zstd gzip
+	request_body {
+		max_size 6MB
+	}
+	reverse_proxy api:4000
+	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+}

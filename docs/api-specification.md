@@ -116,7 +116,7 @@ CSV columns: `sku,name,category,kind,unitType,sellingPrice,purchasePrice,mrp,min
 | Method | Path | Notes |
 |---|---|---|
 | POST | /invoices/preview | `[invoices.create]` same body as create; returns computed totals & stock check, writes nothing |
-| POST | /invoices | `[invoices.create]` see specification §8.1. `201` new, `200` idempotent replay (`meta.replayed=true`). |
+| POST | /invoices | `[invoices.create]` see specification §8.1 (plus optional `discountReason`, required when the discount needs manager approval). `201` new, `200` idempotent replay (`meta.replayed=true`). |
 | GET | /invoices | `[invoices.readAll \| readOwn]` filters: `from,to,salespersonId,paymentStatus,status,paymentMethod,number,customerPhone,customerId,minTotalPaise,maxTotalPaise,q,page,pageSize,sort` (`mine=true` for own) |
 | GET | /invoices/:id | full detail: items, components, payments, returns, stock movements, audit trail |
 | GET | /invoices/:id/pdf | `format=a4\|thermal`, `application/pdf` |
@@ -125,6 +125,8 @@ CSV columns: `sku,name,category,kind,unitType,sellingPrice,purchasePrice,mrp,min
 | POST | /invoices/:id/refunds | `[invoices.refund]` `{method, amountPaise, reason}` |
 | POST | /invoices/:id/void | `[invoices.void]` `{reason, refundMethod?}` |
 | GET | /invoices/:id/repeat | `[invoices.create]` returns cart lines with current price/stock |
+
+List responses include `meta.totals` (`totalPaise`, `paidPaise`, `outstandingPaise`, `discountPaise`) for the filtered set.
 
 Invoice response (abridged):
 ```json
