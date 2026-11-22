@@ -18,3 +18,4 @@ test-results/
 playwright-report/
 web-build/
 .test-uploads/
+apps/crm/test-results/
