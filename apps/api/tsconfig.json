@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false,
+    "useDefineForClassFields": false,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "lib": ["ES2022"],
+    "types": ["node", "jest", "multer"]
+  },
+  "include": ["src", "test"]
+}

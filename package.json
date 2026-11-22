@@ -1,0 +1,24 @@
+{
+  "name": "kite-shop-platform",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.33.2",
+  "engines": { "node": ">=20.11" },
+  "scripts": {
+    "build:packages": "pnpm --filter @kite/shared build && pnpm --filter @kite/api-client build",
+    "build": "pnpm build:packages && pnpm --filter api build && pnpm --filter crm build",
+    "dev:api": "pnpm --filter api start:dev",
+    "dev:crm": "pnpm --filter crm dev",
+    "dev:mobile": "pnpm --filter mobile start",
+    "test": "pnpm --filter @kite/shared test && pnpm --filter api test",
+    "test:e2e": "pnpm --filter api test:e2e",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "pnpm -r --if-present lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\""
+  },
+  "devDependencies": {
+    "prettier": "3.6.2",
+    "@types/node": "22.20.5",
+    "typescript": "5.9.3"
+  }
+}
