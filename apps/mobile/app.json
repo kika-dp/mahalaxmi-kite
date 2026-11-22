@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Kite POS",
+    "slug": "kite-pos",
+    "scheme": "kitepos",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "platforms": ["ios"],
+    "ios": {
+      "bundleIdentifier": "com.kiteshop.pos",
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSCameraUsageDescription": "Kite POS uses the camera to scan product barcodes and QR codes when billing.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "splash": { "backgroundColor": "#1E1B4B" },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      ["expo-camera", { "cameraPermission": "Kite POS uses the camera to scan product barcodes and QR codes when billing.", "recordAudioAndroid": false }],
+      ["expo-splash-screen", { "backgroundColor": "#1E1B4B", "imageWidth": 120 }]
+    ],
+    "experiments": { "typedRoutes": false }
+  }
+}

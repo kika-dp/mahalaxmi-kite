@@ -89,6 +89,22 @@ describe('Billing engine: invoices, discounts, payments, returns, voids', () => 
     expect(n).toBe(1);
   });
 
+  it('accepts manager-approved item-level discounts with a top-level discountReason', async () => {
+    const p = await makeProduct(admin, { price: 10000, stock: 5 });
+    const body = {
+      idempotencyKey: key(),
+      items: [{ productId: p.id, quantity: 1, discount: { type: 'PERCENT', value: 2500 } }],
+      payments: [{ method: 'UPI', amountPaise: 7500 }],
+      discountApproval: { username: 'admin01', password: 'KiteDev@2026#02' },
+    };
+    const noReason = await seller.post('/invoices', body);
+    expect(noReason.status).toBe(400);
+    const ok = await seller.post('/invoices', { ...body, idempotencyKey: key(), discountReason: 'Slightly torn' });
+    expect(ok.status).toBe(201);
+    expect(ok.body.data.discountReason).toBe('Slightly torn');
+    expect(ok.body.data.discountApprovedBy.username).toBe('admin01');
+  });
+
   it('rejects discounts above the bill amount and negative totals', async () => {
     const p = await makeProduct(admin, { price: 1000, stock: 10 });
     const res = await admin.post('/invoices', { idempotencyKey: key(), items: [{ productId: p.id, quantity: 1 }], billDiscount: { type: 'FIXED', value: 1001 } });

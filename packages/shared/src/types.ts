@@ -353,6 +353,8 @@ export interface CreateInvoiceRequest {
   customer?: { customerId?: string; name?: string; phone?: string } | null;
   payments?: PaymentInput[];
   discountApproval?: { username: string; password: string } | null;
+  /** Why a discount was given (required when it exceeds the salesperson's cap). */
+  discountReason?: string;
   notes?: string;
 }
 export interface InvoicePreviewLine {

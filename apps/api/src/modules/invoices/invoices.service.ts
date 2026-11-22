@@ -69,8 +69,8 @@ function stableStringify(v: unknown): string {
 }
 
 export function requestHash(dto: CreateInvoiceDto): string {
-  const { items, billDiscount, customer, payments, notes } = dto;
-  return createHash('sha256').update(stableStringify({ items, billDiscount, customer, payments, notes })).digest('hex');
+  const { items, billDiscount, customer, payments, notes, discountReason } = dto;
+  return createHash('sha256').update(stableStringify({ items, billDiscount, customer, payments, notes, discountReason })).digest('hex');
 }
 
 @Injectable()
@@ -305,8 +305,9 @@ export class InvoicesService {
         { maxDiscountBps: priced.maxDiscountBps, requestedBps: calc.discountBpsOfGross },
       );
     }
-    if (priced.requiresApproval && !dto.billDiscount?.reason?.trim()) {
-      throw Errors.validation('Enter a reason for the discount', [{ field: 'billDiscount.reason', message: 'Required for approved discounts' }]);
+    const discountReason = dto.billDiscount?.reason?.trim() || dto.discountReason?.trim() || null;
+    if (priced.requiresApproval && !discountReason) {
+      throw Errors.validation('Enter a reason for the discount', [{ field: 'discountReason', message: 'Required for approved discounts' }]);
     }
 
     // ---- payments (spec §9)
@@ -410,7 +411,7 @@ export class InvoicesService {
         costTotal,
         paid,
         bal.outstandingPaise,
-        dto.billDiscount?.reason?.trim() || null,
+        calc.discountTotalPaise > 0 ? discountReason : null,
         calc.discountTotalPaise > 0 ? actor.userId : null,
         priced.requiresApproval ? approverId : null,
         dto.notes?.trim() || null,
@@ -490,7 +491,7 @@ export class InvoicesService {
             discountBps: calc.discountBpsOfGross,
             capBps: priced.maxDiscountBps,
             discountPaise: calc.discountTotalPaise,
-            reason: dto.billDiscount?.reason,
+            reason: discountReason,
           },
           ip: meta.ip,
           requestId: meta.requestId,

@@ -110,6 +110,11 @@ export class CreateInvoiceDto {
   @ValidateNested()
   @Type(() => DiscountApprovalDto)
   discountApproval?: DiscountApprovalDto | null;
+  @ApiPropertyOptional({ description: 'Reason for the discount (required above the cap)' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  discountReason?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(500) notes?: string;
 }
 

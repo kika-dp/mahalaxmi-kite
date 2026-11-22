@@ -19,3 +19,4 @@ playwright-report/
 web-build/
 .test-uploads/
 apps/crm/test-results/
+apps/mobile/dist/
