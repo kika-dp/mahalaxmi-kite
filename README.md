@@ -6,7 +6,7 @@ Billing, inventory and sales management for a retail kite shop during the Uttara
 |---|---|---|
 | `apps/api` | NestJS 11 · TypeORM · PostgreSQL | All business rules, the only writer to the database |
 | `apps/crm` | Next.js 15 · Tailwind 4 · TanStack Query · Recharts | Owners, admins, inventory staff |
-| `apps/mobile` | Expo SDK 54 (React Native) · Expo Router | Salespeople billing on iPhones |
+| `apps/mobile` | Expo SDK 58 (React Native) · Expo Router | Salespeople billing on iPhones |
 | `packages/shared` | TypeScript | Money (integer paise), billing engine, permissions, contracts |
 | `packages/api-client` | TypeScript | Typed HTTP client used by both apps |
 

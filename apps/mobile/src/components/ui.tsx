@@ -8,6 +8,7 @@ import {
   View,
   type PressableProps,
   type StyleProp,
+  type TextInputInstance,
   type TextInputProps,
   type TextStyle,
   type ViewStyle,
@@ -97,7 +98,7 @@ export function Money({ paise, style, compact }: { paise: number | null | undefi
   return <Text style={[font.money, { color: colors.ink }, style]}>{money(paise, compact)}</Text>;
 }
 
-export const Input = forwardRef<TextInput, TextInputProps & { label?: string; error?: string }>(({ label, error, style, ...props }, ref) => (
+export const Input = forwardRef<TextInputInstance, TextInputProps & { label?: string; error?: string }>(({ label, error, style, ...props }, ref) => (
   <View style={{ gap: 6 }}>
     {label && <Text style={styles.label}>{label}</Text>}
     <TextInput

@@ -29,7 +29,7 @@ export default function Catalog() {
       <FlatList
         data={rows}
         keyExtractor={(p) => p.id}
-        refreshControl={<RefreshControl refreshing={catalog.isRefetching} onRefresh={catalog.refetch} />}
+        refreshControl={<RefreshControl refreshing={catalog.isRefetching} onRefresh={() => void catalog.refetch()} />}
         contentContainerStyle={{ paddingHorizontal: space.lg, paddingBottom: 40 }}
         ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: colors.ink100 }} />}
         renderItem={({ item: p }) => (

@@ -16,7 +16,7 @@ The first real use is Uttarayan 2027 (14 Jan 2027). Everything needed for the co
 |---|---|---|
 | D1 | pnpm-workspace monorepo: `apps/api`, `apps/crm`, `apps/mobile`, `packages/shared`, `packages/api-client` | One repo, shared contracts. `node-linker=hoisted` for React Native compatibility. |
 | D2 | Modular monolith NestJS 11 + TypeORM 0.3 + PostgreSQL | 12 users do not need microservices; transactions across stock+billing need one DB. |
-| D3 | Pinned to latest *stable major lines with known APIs*: NestJS 11, TypeORM 0.3, Next.js 15, Tailwind 4.1, Expo SDK 54, Zod 3 | Newer majors exist (NestJS 12, TypeORM 1.x) but correctness > novelty. Upgrade later deliberately. |
+| D3 | Pinned to latest *stable major lines with known APIs*: NestJS 11, TypeORM 0.3, Next.js 15, Tailwind 4.1, Expo SDK 58, Zod 3 | Newer majors exist (NestJS 12, TypeORM 1.x) but correctness > novelty. Upgrade later deliberately. |
 | D4 | Money in integer paise (`bigint`), percentages in bps | No floating-point in finance. |
 | D5 | Stock only on STANDARD products; packets/combos are BUNDLE products deducting components | Single physical stock; no duplicate inventory. |
 | D6 | Stock changes via `SELECT … FOR UPDATE` in sorted order + `CHECK (quantity >= 0)` | Prevents overselling and deadlocks; DB is final guard. |

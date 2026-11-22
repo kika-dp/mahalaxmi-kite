@@ -7,7 +7,7 @@ Legend: ✅ done & verified · 🟡 done, partially verified · ⬜ not started 
 ## Environment facts (dev machine, 2026-11-22)
 - Node 24.2, pnpm 10.33, PostgreSQL 14.18 (Homebrew), no Docker, **no Xcode** (Command Line Tools only → iOS simulator unavailable; mobile verified by typecheck, unit tests and `expo export`).
 - Local DBs (owner role `kite`/`kite`): `kite` (dev, demo catalog), `kite_test` (integration tests; wiped each run), `kite_e2e` (Playwright + load test data, ~4,800 bills).
-- Pinned stack: NestJS 11.2, TypeORM 0.3.31, Next.js 15.5, Tailwind 4.1, Expo SDK 54 (RN 0.81, React 19.1), Zod 3.25 (plan.md D3).
+- Pinned stack: NestJS 11.2, TypeORM 0.3.31, Next.js 15.5, Tailwind 4.1, Expo SDK 58 (RN 0.88, React 19.3), Zod 3.25 (plan.md D3).
 
 ## Phase status
 
@@ -42,6 +42,7 @@ Legend: ✅ done & verified · 🟡 done, partially verified · ⬜ not started 
 - D27 Mobile: manager approval credentials are never persisted with the cart; refresh token in Keychain only when "Keep me signed in".
 - D28 `tsconfig.build.json` has `incremental: false` (stale `.tsbuildinfo` + `deleteOutDir` produced an empty `dist`).
 - D29 Security overrides: multer ≥ 2.5.0, postcss ≥ 8.5.23; csv-parse 7.0.3.
+- D30 (2026-11-22) Mobile upgraded Expo SDK 54 → **58** (expo 58.0.26, RN 0.88.1, React 19.3.0) so the current App Store Expo Go can open it. CRM aligned to React 19.3.0 to keep a single React copy in the hoisted node_modules. Code changes were type-level only (RN 0.88 stricter types: `onRefresh` returns void, `TextInputInstance` ref type, no `null` list-empty components, tab icon colour narrowing). Verified: `expo install --check` (all runtime modules match), mobile typecheck, 9 unit tests, iOS bundle export, dev-server bundle, CRM typecheck + build. Dev tooling left on jest 29 / TypeScript 5.9 (Expo suggests jest 30 / TS 6; dev-only). RN 0.88 declares Node ^24.3 — this Mac runs 24.2 and everything worked, but upgrade Node when convenient.
 
 ## Known issues / open items
 1. **iOS app not yet run on a device or simulator** (no Xcode here). Before the season: build via EAS or Xcode and run the device checklist in testing-plan.md (scanner, AirPrint, share to WhatsApp, offline banner, kill/restore cart).
@@ -61,7 +62,7 @@ Legend: ✅ done & verified · 🟡 done, partially verified · ⬜ not started 
 | `pnpm --filter api test:e2e` (real PostgreSQL) | **49/49** passed — auth 11, RBAC 5, catalog/inventory 9, invoices 18, concurrency 5, full 14-step flow 1 |
 | `pnpm --filter crm build` | success (25 routes) |
 | `pnpm --filter crm test:e2e` (Playwright, Chromium) | **3/3** passed |
-| `expo export --platform ios` | success — 3.57 MB Hermes bundle |
+| `expo export --platform ios` | success — SDK 54: 3.57 MB; after SDK 58 upgrade: 3.5 MB Hermes bundle |
 | Load test (`pnpm --filter api load`, 12 users, 15 s/scenario, prod build) | checkout **313 bills/s, p99 184 ms, 0 errors**; search p99 11 ms; POS catalog p99 8 ms; dashboard p99 16 ms. After 4,738 bills: ledger sums = balances, numbers unique and gap-free, no negative stock |
 | Backup → restore (`scripts/backup.sh`, `scripts/restore.sh`) | 4,738 invoices and 14,211 ledger rows restored identically |
 | `pnpm audit --prod` | 28 → 10 findings after fixes; remainder assessed in security.md |

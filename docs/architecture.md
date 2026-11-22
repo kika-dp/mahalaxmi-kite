@@ -34,7 +34,7 @@ kite-shop-platform/
 │   │   └── test/            integration & e2e (supertest, real Postgres)
 │   ├── crm/                 Next.js 15 App Router
 │   │   └── src/app/(auth)/login, (app)/dashboard, products, inventory, bills, …
-│   └── mobile/              Expo SDK 54, Expo Router
+│   └── mobile/              Expo SDK 58, Expo Router
 │       └── app/(auth)/login, (app)/(tabs)/index|bills|outstanding|profile, bill/new, …
 ├── packages/
 │   ├── shared/              enums, permissions, money, billing calc, zod schemas, DTO types

@@ -14,14 +14,14 @@ export default function Outstanding() {
     <FlatList
       data={q.data?.data ?? []}
       keyExtractor={(b) => b.id}
-      refreshControl={<RefreshControl refreshing={q.isRefetching} onRefresh={q.refetch} />}
+      refreshControl={<RefreshControl refreshing={q.isRefetching} onRefresh={() => void q.refetch()} />}
       ListHeaderComponent={
         <View style={{ padding: space.lg, backgroundColor: colors.white, borderBottomWidth: 1, borderBottomColor: colors.ink200 }}>
           <Muted>Total to collect</Muted>
           <Text style={{ fontSize: 30, fontWeight: '800', color: total ? colors.red : colors.green, fontVariant: ['tabular-nums'] }}>{money(total)}</Text>
         </View>
       }
-      ListEmptyComponent={q.isLoading ? null : <Empty icon="checkmark-done-circle-outline" title="Nothing to collect" subtitle="All your bills are fully paid." />}
+      ListEmptyComponent={q.isLoading ? undefined : <Empty icon="checkmark-done-circle-outline" title="Nothing to collect" subtitle="All your bills are fully paid." />}
       ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: colors.ink100 }} />}
       renderItem={({ item: b }) => {
         const days = Math.floor((Date.now() - new Date(b.createdAt).getTime()) / 86_400_000);

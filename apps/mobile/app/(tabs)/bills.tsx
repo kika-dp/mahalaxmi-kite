@@ -46,9 +46,9 @@ export default function MyBills() {
       <FlatList
         data={rows}
         keyExtractor={(b) => b.id}
-        refreshControl={<RefreshControl refreshing={list.isRefetching} onRefresh={list.refetch} />}
+        refreshControl={<RefreshControl refreshing={list.isRefetching} onRefresh={() => void list.refetch()} />}
         onEndReached={() => list.hasNextPage && list.fetchNextPage()}
-        ListEmptyComponent={list.isLoading ? null : <Empty icon="receipt-outline" title="No bills" subtitle="Bills you create appear here." />}
+        ListEmptyComponent={list.isLoading ? undefined : <Empty icon="receipt-outline" title="No bills" subtitle="Bills you create appear here." />}
         ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: colors.ink100 }} />}
         renderItem={({ item: b }) => (
           <PressableRow onPress={() => router.push(`/bill/${b.id}`)} style={{ flexDirection: 'row', alignItems: 'center', padding: space.lg, gap: space.md, backgroundColor: colors.white }}>

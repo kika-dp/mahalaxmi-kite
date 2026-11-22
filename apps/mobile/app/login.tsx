@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Switch, Text, View, type TextInputInstance } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Button, Input } from '@/components/ui';
@@ -17,7 +17,7 @@ export default function Login() {
   const [remember, setRemember] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const pwRef = useRef<TextInput>(null);
+  const pwRef = useRef<TextInputInstance>(null);
 
   const submit = async () => {
     if (!identifier.trim() || !password) return setError('Enter your username and password');

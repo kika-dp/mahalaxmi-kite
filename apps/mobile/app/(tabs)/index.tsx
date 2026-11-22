@@ -40,7 +40,7 @@ export default function Home() {
       <NetworkBanner />
       <ScrollView
         contentContainerStyle={{ padding: space.lg, gap: space.lg }}
-        refreshControl={<RefreshControl refreshing={summary.isRefetching} onRefresh={() => (summary.refetch(), recent.refetch(), catalog.refetch())} />}
+        refreshControl={<RefreshControl refreshing={summary.isRefetching} onRefresh={() => void Promise.all([summary.refetch(), recent.refetch(), catalog.refetch()])} />}
       >
         <View style={st.grid}>
           <Stat label="Bills today" value={s ? String(s.billsCount) : '—'} icon="receipt-outline" />

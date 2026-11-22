@@ -59,7 +59,7 @@ export default function BillDetail() {
   return (
     <>
       <Stack.Screen options={{ title: b.invoiceNumber }} />
-      <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.lg }} refreshControl={<RefreshControl refreshing={q.isRefetching} onRefresh={q.refetch} />}>
+      <ScrollView contentContainerStyle={{ padding: space.lg, gap: space.lg }} refreshControl={<RefreshControl refreshing={q.isRefetching} onRefresh={() => void q.refetch()} />}>
         <Card style={{ gap: space.sm }}>
           <Row style={{ justifyContent: 'space-between' }}>
             <Muted>{formatIstDateTime(b.createdAt)}</Muted>
