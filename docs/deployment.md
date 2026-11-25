@@ -105,7 +105,7 @@ This repository was built on a Mac **without Xcode**, so the app has not been la
 
 ## 5. Production (single server, Docker Compose)
 
-> **Free option:** step-by-step guide for Oracle Cloud Always Free + DuckDNS in [deployment-oracle.md](deployment-oracle.md) (one command from this Mac: `deploy/push.sh`). The stack serves the CRM and API from **one domain** (`/api/*` → API), so the generic steps below should use `SITE_DOMAIN` instead of separate CRM/API domains.
+> **Free options:** **Neon + Render + Vercel** → [deployment-free.md](deployment-free.md) (current plan). Alternative: Oracle Cloud Always Free + DuckDNS in [deployment-oracle.md](deployment-oracle.md) (one command from this Mac: `deploy/push.sh`). The stack serves the CRM and API from **one domain** (`/api/*` → API), so the generic steps below should use `SITE_DOMAIN` instead of separate CRM/API domains.
 
 Recommended: a small VM (2 vCPU / 4 GB, Ubuntu 24.04) in an Indian region, plus a 4G hotspot at the shop as a backup link.
 

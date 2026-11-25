@@ -1,0 +1,41 @@
+# Render Blueprint for the API (Dashboard → New → Blueprint → pick this repo).
+# Secrets marked `sync: false` are entered in the Render dashboard, never committed.
+services:
+  - type: web
+    name: kite-api
+    runtime: node
+    plan: free
+    # Pick the region closest to the Neon database (Neon us-east-2 = Ohio).
+    region: ohio
+    rootDir: .
+    buildCommand: >-
+      npm install -g pnpm@10.33.2 &&
+      pnpm install --frozen-lockfile --filter "api..." &&
+      pnpm --filter @kite/shared build && pnpm --filter api build
+    # Apply pending migrations (direct Neon host), then start.
+    startCommand: node apps/api/dist/database/cli/migrate.js run && node apps/api/dist/main.js
+    healthCheckPath: /api/v1/health/ready
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22.12.0"
+      - key: DATABASE_URL
+        sync: false # Neon *pooled* connection string (host contains "-pooler")
+      - key: MIGRATE_DATABASE_URL
+        sync: false # Neon *direct* connection string (same, without "-pooler")
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false # e.g. https://kite-crm.vercel.app
+      - key: PUBLIC_API_URL
+        sync: false # e.g. https://kite-api.onrender.com
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: SWAGGER_ENABLED
+        value: "false"
+      - key: LOG_LEVEL
+        value: info
+      - key: UPLOAD_DIR
+        value: /tmp/kite-uploads # Render free disks are wiped on restart (see docs)

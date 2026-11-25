@@ -9,7 +9,8 @@ async function main(): Promise<void> {
   const env = loadEnv();
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true });
   await configureApp(app, env);
-  await app.listen(env.API_PORT, '0.0.0.0');
+  // Hosting platforms (Render, Railway, …) inject PORT; fall back to API_PORT.
+  await app.listen(Number(process.env.PORT) || env.API_PORT, '0.0.0.0');
 }
 
 main().catch((err) => {

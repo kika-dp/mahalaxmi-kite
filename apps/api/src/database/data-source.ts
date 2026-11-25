@@ -12,7 +12,8 @@ export function buildDataSourceOptions(url?: string): DataSourceOptions {
   return {
     type: 'postgres',
     url: url ?? env.DATABASE_URL,
-    ssl: env.DATABASE_SSL ? { rejectUnauthorized: false } : false,
+    // Managed hosts (e.g. Neon) put `sslmode=require` in the URL; only override when DATABASE_SSL is set.
+    ...(env.DATABASE_SSL ? { ssl: { rejectUnauthorized: false } } : {}),
     entities: ENTITIES,
     migrations: MIGRATIONS,
     namingStrategy: new SnakeNamingStrategy(),
@@ -22,8 +23,8 @@ export function buildDataSourceOptions(url?: string): DataSourceOptions {
     logging: false,
     extra: {
       max: env.DATABASE_POOL_MAX,
-      // All sessions use UTC; business-date logic converts explicitly to Asia/Kolkata.
-      options: '-c timezone=UTC',
+      // No session options: connection poolers (Neon/PgBouncer) reject unknown startup parameters.
+      // All business-date SQL converts explicitly with AT TIME ZONE 'Asia/Kolkata', so the session timezone is irrelevant.
       statement_timeout: 30_000,
     },
   };

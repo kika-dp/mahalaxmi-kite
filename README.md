@@ -34,7 +34,7 @@ Dev accounts (12 users) are listed in [docs/deployment.md](docs/deployment.md) �
 - Dashboards and reports come only from real transactions; unpaid bills are never counted as collected cash.
 
 ## Documentation
-[plan](docs/plan.md) · [specification](docs/specification.md) · [architecture](docs/architecture.md) · [database schema](docs/database-schema.md) · [API](docs/api-specification.md) · [UI/UX](docs/ui-ux-specification.md) · [security](docs/security.md) · [testing](docs/testing-plan.md) · [deployment](docs/deployment.md) · [progress](docs/progress.md)
+[plan](docs/plan.md) · [specification](docs/specification.md) · [architecture](docs/architecture.md) · [database schema](docs/database-schema.md) · [API](docs/api-specification.md) · [UI/UX](docs/ui-ux-specification.md) · [security](docs/security.md) · [testing](docs/testing-plan.md) · [deployment](docs/deployment.md) · [free hosting: Neon + Render + Vercel](docs/deployment-free.md) · [progress](docs/progress.md)
 
 ## Tests
 ```bash
