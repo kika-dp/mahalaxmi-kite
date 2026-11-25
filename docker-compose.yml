@@ -41,7 +41,8 @@ services:
     build:
       context: .
       dockerfile: apps/crm/Dockerfile
-      args: { NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:-http://localhost:4000/api/v1}" }
+      # Same-origin API behind Caddy (see Caddyfile). Override for a split-domain setup.
+      args: { NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL:-/api/v1}" }
     restart: unless-stopped
     depends_on: [api]
     ports: ["127.0.0.1:3000:3000"]

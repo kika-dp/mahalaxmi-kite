@@ -105,21 +105,22 @@ This repository was built on a Mac **without Xcode**, so the app has not been la
 
 ## 5. Production (single server, Docker Compose)
 
+> **Free option:** step-by-step guide for Oracle Cloud Always Free + DuckDNS in [deployment-oracle.md](deployment-oracle.md) (one command from this Mac: `deploy/push.sh`). The stack serves the CRM and API from **one domain** (`/api/*` → API), so the generic steps below should use `SITE_DOMAIN` instead of separate CRM/API domains.
+
 Recommended: a small VM (2 vCPU / 4 GB, Ubuntu 24.04) in an Indian region, plus a 4G hotspot at the shop as a backup link.
 
 ```bash
-# DNS: crm.your-shop.in and api.your-shop.in → server IP
+# DNS: shop.your-domain.in → server IP
 cp .env.example .env
 # Set at least:
 #   NODE_ENV=production
 #   JWT_ACCESS_SECRET=$(openssl rand -base64 48)
 #   POSTGRES_PASSWORD=<strong password>
-#   CORS_ORIGINS=https://crm.your-shop.in
+#   CORS_ORIGINS=https://shop.your-domain.in
 #   COOKIE_SECURE=true
-#   PUBLIC_API_URL=https://api.your-shop.in
-#   NEXT_PUBLIC_API_URL=https://api.your-shop.in/api/v1
-#   CRM_DOMAIN=crm.your-shop.in
-#   API_DOMAIN=api.your-shop.in
+#   PUBLIC_API_URL=https://shop.your-domain.in
+#   NEXT_PUBLIC_API_URL=/api/v1
+#   SITE_DOMAIN=shop.your-domain.in       (CRM at /, API at /api — one HTTPS domain)
 #   SWAGGER_ENABLED=false
 docker compose --profile app --profile prod up -d --build      # db, api (auto-migrates), crm, caddy (HTTPS), backups
 # First Super Admin (one time). Never use the dev seeder in production.
@@ -134,7 +135,7 @@ Without Docker: build with `pnpm build`, run `node apps/api/dist/main.js` and `n
 `apps/api/scripts/db-roles.sql` creates `kite_migrator` (owns schema, runs migrations) and `kite_app` (no DDL; **cannot UPDATE/DELETE** the stock ledger or audit log). Use `kite_app` in `DATABASE_URL` and `MIGRATE_DATABASE_URL` (kite_migrator) for migrations.
 
 ### HTTPS
-Caddy obtains and renews Let's Encrypt certificates automatically for `CRM_DOMAIN` and `API_DOMAIN`, adds HSTS and compression. The API and CRM containers only listen on 127.0.0.1.
+Caddy obtains and renews a Let's Encrypt certificate automatically for `SITE_DOMAIN`, routes `/api/*` and `/uploads/*` to the API and everything else to the CRM, and adds HSTS and compression. Same-origin serving keeps the CRM's httpOnly refresh cookie first-party. The API and CRM containers only listen on 127.0.0.1.
 
 ### LAN mode (internet outage plan)
 The whole stack can run on a shop laptop on the shop Wi-Fi (`docker compose --profile app up -d`). Point the phones at `http://<laptop-ip>:4000/api/v1` (development build setting, or a separate EAS build profile). Use only if the cloud server is unreachable for a long time, and never run two servers against different databases at once.

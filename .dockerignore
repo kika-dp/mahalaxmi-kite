@@ -9,6 +9,9 @@
 .env
 .env.*
 !.env.example
-apps/mobile
 uploads
 backups
+# The iOS app is not part of the server images, but pnpm needs its package.json to
+# validate the workspace lockfile.
+apps/mobile/*
+!apps/mobile/package.json

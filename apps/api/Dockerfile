@@ -4,9 +4,12 @@ FROM node:22-bookworm-slim AS build
 WORKDIR /repo
 RUN corepack enable && corepack prepare pnpm@10.33.2 --activate
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml .npmrc tsconfig.base.json ./
+# All workspace manifests are needed so pnpm can validate the lockfile.
 COPY packages/shared/package.json packages/shared/
 COPY packages/api-client/package.json packages/api-client/
 COPY apps/api/package.json apps/api/
+COPY apps/crm/package.json apps/crm/
+COPY apps/mobile/package.json apps/mobile/
 RUN pnpm install --frozen-lockfile --filter "api..."
 COPY packages/shared packages/shared
 COPY apps/api apps/api

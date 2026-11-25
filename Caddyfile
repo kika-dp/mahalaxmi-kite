@@ -1,15 +1,26 @@
-# Automatic HTTPS (Let's Encrypt). Set CRM_DOMAIN and API_DOMAIN in .env and point DNS at this server.
-{$CRM_DOMAIN} {
+# One HTTPS domain for everything (automatic Let's Encrypt certificate).
+#   https://SITE_DOMAIN/            → CRM (Next.js)
+#   https://SITE_DOMAIN/api/...     → API (also used by the iPhone app)
+#   https://SITE_DOMAIN/uploads/... → product images served by the API
+# Serving the CRM and API from the same origin keeps the CRM's httpOnly refresh cookie
+# first-party, so no CORS or cross-site cookie configuration is needed.
+{$SITE_DOMAIN} {
 	encode zstd gzip
-	reverse_proxy crm:3000
-	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
-}
 
-{$API_DOMAIN} {
-	encode zstd gzip
-	request_body {
-		max_size 6MB
+	@api path /api/* /uploads/*
+	handle @api {
+		request_body {
+			max_size 6MB
+		}
+		reverse_proxy api:4000
 	}
-	reverse_proxy api:4000
-	header Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+	handle {
+		reverse_proxy crm:3000
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
 }
